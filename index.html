@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ro" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO BAZĂ -->
+    <title>UrbanFixCluj | Amenajări Interioare și Finisaje de Lux Cluj</title>
+    <meta name="description"
+        content="UrbanFixCluj - Servicii profesionale de amenajări interioare în Cluj-Napoca. Gletuire mecanică, montaj gresie/faianță, rigips și renovări complete la cheie.">
+    <meta name="keywords"
+        content="amenajari interioare cluj, finisaje cluj, renovari apartamente cluj, gresie faianta cluj, glet mecanic cluj, echipa finisaje cluj">
+    <meta name="author" content="UrbanFixCluj">
+
+    <!-- OPEN GRAPH (Pentru Facebook/WhatsApp) -->
+    <meta property="og:title" content="UrbanFixCluj | Calitate în Amenajări">
+    <meta property="og:description" content="Transformăm casa ta în Cluj-Napoca. Finisaje de interior profesionale.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://urbanfixcluj.ro">
+
+    <!-- GOOGLE ANALYTICS (Înlocuiește G-XXXXXXXXXX cu codul tău din contul Analytics) -->
+    <!--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    -->
+
+    <!-- DATE STRUCTURATE (SCHEMA.ORG) PENTRU SEO LOCAL -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "UrbanFixCluj",
+      "image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069",
+      "@id": "https://urbanfixcluj.ro",
+      "url": "https://urbanfixcluj.ro",
+      "telephone": "+40736953375",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Cluj-Napoca",
+        "addressLocality": "Cluj-Napoca",
+        "postalCode": "400000",
+        "addressRegion": "Cluj",
+        "addressCountry": "RO"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 47.05,
+        "longitude": 21.93
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+        ],
+        "opens": "08:00",
+        "closes": "18:00"
+      },
+      "sameAs": [
+        "https://www.facebook.com/urbanfixcluj",
+        "https://www.instagram.com/urbanfixcluj"
+      ]
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .gallery-item.hidden {
+            display: none;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .video-container video {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Configurație Tehnică -->
+    <script>
+        const CONFIG = {
+            // Placeholder URLs - YOU MUST UPDATE THESE WITH YOUR UNIQUE GOOGLE APPS SCRIPT URLS FOR EACH FOLDER
+            URLS: {
+                baie: "https://script.google.com/macros/s/AKfycbyg245gdrvevBiyEjaxYBahD-4tm3zHa0HV1RFhJUeiDBeIh42PqJjOvMjAa-_zgClD/exec",
+                bucatarie: "https://script.google.com/macros/s/AKfycbyuFNN_Xc5zeOOpbK2F4zwYcYe0KOwnaOGmsg0gYWqjKxCLdEseKUI4j617fh9FzKck/exec",
+                dormitor: "https://script.google.com/macros/s/AKfycbxm1D7ItBIXwyte4fK7u7h9sveIkOoQec9Zx-McFcSs1AfNmA6JMS_Qkv_sm6pn5tO3/exec",
+                living: "https://script.google.com/macros/s/AKfycbxTd-olra8UTO3aBCUt0zFwil8AaeAGXbyBZLGRczm36x0jwUUzArI7re2cnLhRMsVv/exec",
+                comercial: "https://script.google.com/macros/s/AKfycbxTd-olra8UTO3aBCUt0zFwil8AaeAGXbyBZLGRczm36x0jwUUzArI7re2cnLhRMsVv/exec"
+            },
+            FALLBACK_IMAGES: [
+                { type: 'photo', url: 'https://images.unsplash.com/photo-1620626012761-d72698e55301?q=80&w=1000', title: 'Interior UrbanFix' },
+                { type: 'photo', url: 'https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=1000', title: 'Renovare Cluj' }
+            ]
+        };
+
+        // Helper pentru link-uri video Google Drive
+        function fixDriveUrl(url) {
+            if (url.includes('drive.google.com')) {
+                const id = url.match(/\/d\/(.+?)\//)?.[1] || url.match(/id=(.+?)(&|$)/)?.[1];
+                return id ? `https://drive.google.com/uc?export=download&id=${id}` : url;
+            }
+            return url;
+        }
+
+        function renderGallery(items, containerId) {
+            const grid = document.getElementById(containerId);
+            if (!grid) return;
+
+            grid.innerHTML = '';
+
+            // Filter for PHOTOS only
+            const photos = items ? items.filter(item => item.type === 'photo' || !item.type) : [];
+            const displayItems = photos.length > 0 ? photos : CONFIG.FALLBACK_IMAGES;
+
+            displayItems.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.className = `gallery-item relative overflow-hidden rounded-3xl aspect-[4/3] shadow-lg group`;
+                element.style.animation = `fadeInUp 0.6s ease-out forwards ${index * 0.1}s`;
+                element.style.opacity = "0";
+
+                const mediaUrl = fixDriveUrl(item.url);
+                const mediaHtml = `<img src="${mediaUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform" loading="lazy">`;
+
+                element.innerHTML = `
+                    ${mediaHtml}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+                        <p class="text-white font-bold text-lg">${item.title || 'Proiect UrbanFix'}</p>
+                    </div>
+                `;
+                grid.appendChild(element);
+            });
+        }
+
+        async function fetchAllGalleries() {
+            for (const [key, url] of Object.entries(CONFIG.URLS)) {
+                const gridId = `grid-${key}`;
+                try {
+                    // For now, same URL is used. In real usage, you'd have different scripts/folders.
+                    // If you use the same script but different query params, modify here.
+                    const response = await fetch(url);
+                    const responseData = await response.json();
+                    // Handle wrapped response from Google Apps Script ({ success: true, data: [...] })
+                    const galleryItems = Array.isArray(responseData) ? responseData : (responseData.data || []);
+                    renderGallery(galleryItems, gridId);
+                } catch (e) {
+                    console.warn(`Eroare incarcare galerie ${key}, folosim fallback.`);
+                    renderGallery([], gridId);
+                }
+            }
+        }
+
+        fetchAllGalleries();
+
+        // Mobile Menu
+        const mobileBtn = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.onclick = () => mobileMenu.classList.toggle('hidden');
+        document.querySelectorAll('.mobile-link').forEach(l => l.onclick = () => mobileMenu.classList.add('hidden'));
+
+        // Navbar Scroll
+        window.onscroll = () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('glass', 'shadow-md', 'py-3');
+            else nav.classList.remove('glass', 'shadow-md', 'py-3');
+        };
+        // Toggle Gallery Accordion
+        function toggleGallery(gridId, header) {
+            const grid = document.getElementById(gridId);
+            const icon = header.querySelector('.fa-chevron-down');
+
+            if (grid.classList.contains('hidden')) {
+                grid.classList.remove('hidden');
+                grid.classList.add('animate-fadeIn');
+                icon.style.transform = 'rotate(180deg)';
+                // Optional: Scroll to it
+                // header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                grid.classList.add('hidden');
+                grid.classList.remove('animate-fadeIn');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+
+    <!-- Navigație -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <a href="#" class="logo"><img src="logo.png" alt="UrbanFixCluj Logo" class="h-10 w-auto"></a>
+                    <span id="logo-text" class="text-xl font-bold tracking-tighter text-white">UrbanFixCluj<span
+                            class="text-orange-600">Cluj</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#acasa"
+                        class="nav-link text-sm font-medium text-white/90 hover:text-orange-500 transition-colors">Acasă</a>
+                    <a href="#despre-noi"
+                        class="nav-link text-sm font-medium text-white/90 hover:text-orange-500 transition-colors">Despre
+                        Noi</a>
+                    <a href="#servicii"
+                        class="nav-link text-sm font-medium text-white/90 hover:text-orange-500 transition-colors">Servicii</a>
+                    <a href="#galerie"
+                        class="nav-link text-sm font-medium text-white/90 hover:text-orange-500 transition-colors">Galerie</a>
+                    <a href="#contact"
+                        class="nav-link text-sm font-medium text-white/90 hover:text-orange-500 transition-colors">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t absolute w-full left-0 shadow-xl">
+            <div class="px-4 pt-2 pb-6 space-y-1 text-center">
+                <a href="#acasa" class="mobile-link block py-3 text-base font-medium text-slate-700">Acasă</a>
+                <a href="#despre-noi" class="mobile-link block py-3 text-base font-medium text-slate-700">Despre Noi</a>
+                <a href="#servicii" class="mobile-link block py-3 text-base font-medium text-slate-700">Servicii</a>
+                <a href="#galerie" class="mobile-link block py-3 text-base font-medium text-slate-700">Galerie</a>
+                <a href="#contact" class="mobile-link block py-3 text-base font-medium text-slate-700">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="acasa" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0 bg-cover bg-center"
+            style="background-image: url('https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069');">
+            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]"></div>
+        </div>
+        <div class="relative z-10 max-w-5xl mx-auto px-4 text-center text-white">
+            <h1 class="text-4xl md:text-7xl font-bold mb-6 leading-tight">Amenajări interioare<br><span
+                    class="text-orange-500">făcute bine</span></h1>
+            <p class="text-lg md:text-xl mb-10 text-slate-200 max-w-2xl mx-auto font-light uppercase tracking-widest">
+                de la prima mână</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#galerie"
+                    class="px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-full transition-all transform hover:scale-105">Portofoliu
+                    Lucrări</a>
+                <a href="#contact"
+                    class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-semibold rounded-full border border-white/30 transition-all transform hover:scale-105">Cere
+                    Ofertă Cluj</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Despre Noi -->
+    <section id="despre-noi" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="relative">
+                    <!-- <img src="https://images.unsplash.com/photo-1581291417004-6e739845cfc7?q=80&w=2070"
+                        alt="Echipa finisaje Cluj" class="rounded-3xl shadow-2xl z-10 relative"> -->
+                    <div
+                        class="absolute -bottom-6 -right-6 bg-orange-600 p-8 rounded-2xl text-white shadow-xl z-20 hidden md:block">
+                        <p class="text-4xl font-bold">100+</p>
+                        <p class="text-sm font-medium uppercase">Proiecte Finalizate</p>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-bold mb-6">Expertiză Locală în <span
+                            class="text-orange-600">Amenajări</span></h2>
+                    <p class="text-slate-600 text-lg mb-6 leading-relaxed">
+                        Suntem <strong>UrbanFixCluj</strong>, o echipă tânără dar experimentată din
+                        <strong>Cluj-Napoca</strong>, specializată în aducerea la viață a proiectelor de design
+                        interior.
+                    </p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3">
+                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg></div>
+                            <span class="font-medium">Consultanță gratuită pentru alegerea materialelor în
+                                Cluj-Napoca.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg></div>
+                            <span class="font-medium">Garanția lucrării și termene de execuție scurte.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg></div>
+                            <span class="font-medium">Execuție de mobilier la comandă sau modular</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg></div>
+                            <span class="font-medium">Termene de execuție scurte și respectate </span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg></div>
+                            <span class="font-medium">Prețuri corecte, stabilite de la început</span>
+                        </li>
+                        <!-- <li class="flex items-center gap-3">
+                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg></div>
+                            <span class="font-medium">Prețuri corecte, stabilite de la început</span>
+                        </li> -->
+                    </ul>
+                    <!-- <a href="#contact"
+                        class="text-orange-600 font-bold flex items-center gap-2 hover:gap-4 transition-all">Află mai
+                        multe <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg></a> -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicii -->
+    <section id="servicii" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-4">Urban Fix Cluj</h2>
+            <div class="w-20 h-1 bg-orange-600 mx-auto mb-12"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
+                    <h3 class="text-xl font-bold mb-4">Finisare pereți</h3>
+                    <p class="text-slate-600">Pereți drepți și fini, gata pentru vopsea, tapet, panouri decorative sau
+                        riflaje.</p>
+                </div>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
+                    <h3 class="text-xl font-bold mb-4">Gresie & Faianță</h3>
+                    <p class="text-slate-600">Montaj precis de orice dimensiuni.
+                    </p>
+                </div>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
+                    <h3 class="text-xl font-bold mb-4">Montaj parchet</h3>
+                    <p class="text-slate-600">Parchet montat corect, cu finisaje îngrijite.</p>
+                </div>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
+                    <h3 class="text-xl font-bold mb-4">Obiecte sanitare</h3>
+                    <p class="text-slate-600">Montaj profesional: WC, lavoar, cadă, duș, baterii, sisteme tip gheberit.
+                    </p>
+                </div>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
+                    <h3 class="text-xl font-bold mb-4">Renovări la cheie</h3>
+                    <p class="text-slate-600">Ne ocupăm de tot: de la decopertare până la ultimele finisaje.</p>
+                </div>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
+                    <h3 class="text-xl font-bold mb-4">Mobilier</h3>
+                    <p class="text-slate-600">Mobiler personalizat la comandă sau modular</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galerie Baie -->
+    <section class="py-8 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-baie', this)">
+            <div class="flex justify-between items-center py-4">
+                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Băi Moderne
+                </h2>
+                <div
+                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </div>
+            </div>
+            <div id="grid-baie" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galerie Bucătărie -->
+    <section class="py-8 bg-slate-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-bucatarie', this)">
+            <div class="flex justify-between items-center py-4">
+                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Bucătării de
+                    Vis</h2>
+                <div
+                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </div>
+            </div>
+            <div id="grid-bucatarie" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galerie Dormitor -->
+    <section class="py-8 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-dormitor', this)">
+            <div class="flex justify-between items-center py-4">
+                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Dormitoare
+                    Relaxante</h2>
+                <div
+                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </div>
+            </div>
+            <div id="grid-dormitor" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galerie Living -->
+    <section class="py-8 bg-slate-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-living', this)">
+            <div class="flex justify-between items-center py-4">
+                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Living & Dining
+                </h2>
+                <div
+                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </div>
+            </div>
+            <div id="grid-living" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galerie Comercial -->
+    <section class="py-8 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-comercial', this)">
+            <div class="flex justify-between items-center py-4">
+                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Spații
+                    Comerciale</h2>
+                <div
+                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </div>
+            </div>
+            <div id="grid-comercial" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Galerie Comercial -->
+    <section class="py-8 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-comercial', this)">
+            <div class="flex justify-between items-center py-4">
+                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">
+                    Pardoseli</h2>
+                <div
+                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </div>
+            </div>
+            <div id="grid-comercial" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galerie Comercial -->
+    <section class="py-8 bg-white border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-comercial', this)">
+            <div class="flex justify-between items-center py-4">
+                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">
+                    Mobilier</h2>
+                <div
+                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                </div>
+            </div>
+            <div id="grid-comercial" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact -->
+    <section id="contact" class="py-24 bg-slate-900 text-white text-center">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8">Solicită Ofertă Gratuită</h2>
+            <p class="mb-12 text-slate-400">Oferim devize clare și termene precise pentru proiectele de amenajare din
+                Cluj-Napoca.</p>
+            <a href="tel:+40736953375"
+                class="inline-block px-10 py-6 bg-orange-600 hover:bg-orange-700 rounded-3xl text-3xl font-bold transition-all transform hover:scale-105">
+                +40 736 953 375
+            </a>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                <a href="https://wa.me/40736953375" target="_blank"
+                    class="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp text-2xl"></i> WhatsApp
+                </a>
+                <a href="https://m.me/consilierimobiliar.bilocopetiucstefan" target="_blank"
+                    class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                    <i class="fab fa-facebook-messenger text-2xl"></i> Chat Facebook
+                </a>
+            </div>
+            <p class="mt-6 text-slate-500">SC BILO MOB SMART SRL, CUI 33792535. Cluj-Napoca, Județul Cluj</p>
+        </div>
+    </section>
+
+    <footer class="bg-slate-950 text-white py-12 text-center border-t border-white/5">
+        <p class="text-slate-500">&copy; <span id="year"></span> UrbanFixCluj. Toate drepturile rezervate.</p>
+    </footer>
+
+
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</body>
+
+</html>
