@@ -116,6 +116,16 @@
             height: 100%;
             background: #000;
         }
+
+        /* Utility to hide scrollbar for horizontal scrolling */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
     <script type="importmap">
 {
@@ -158,7 +168,7 @@
             return url;
         }
 
-        function renderGallery(items, containerId) {
+        function renderGallery(items, containerId, categoryLabel) {
             const grid = document.getElementById(containerId);
             if (!grid) return;
 
@@ -183,8 +193,12 @@
 
                 const mediaHtml = `<img src="${mediaUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform" loading="lazy">`;
 
+                // Badge HTML
+                const badgeHtml = categoryLabel ? `<span class="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md text-white/90 text-[10px] uppercase font-bold px-3 py-1 rounded-full border border-white/10 tracking-wider shadow-lg">${categoryLabel}</span>` : '';
+
                 element.innerHTML = `
                     ${mediaHtml}
+                    ${badgeHtml}
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
                         <p class="text-white font-bold text-lg">${item.title || 'Proiect UrbanFix'}</p>
                         <p class="text-orange-400 text-sm mt-1 transform translate-y-4 group-hover:translate-y-0 transition-transform"><i class="fas fa-search-plus"></i> Vezi detalii</p>
@@ -195,16 +209,46 @@
         }
 
         // Lightbox Functions
+        let currentPlaylist = [];
+        let currentIndex = 0;
+
         function openLightbox(url) {
             const lightbox = document.getElementById('lightbox');
             const img = document.getElementById('lightbox-img');
 
-            img.src = url;
+            // Build playlist from visible images
+            const visibleImages = Array.from(document.querySelectorAll('.gallery-section:not(.hidden) .gallery-item img'));
+            currentPlaylist = visibleImages.map(el => el.src);
+            currentIndex = currentPlaylist.findIndex(src => src === url);
+
+            // Fallback if URL match fails (e.g. encoding differences)
+            if (currentIndex === -1) {
+                // Try matching by checking if included
+                currentIndex = currentPlaylist.findIndex(src => src.includes(url) || url.includes(src));
+                if (currentIndex === -1) currentIndex = 0;
+            }
+
+            updateLightboxImage();
+
             lightbox.classList.remove('hidden');
             lightbox.classList.add('flex'); // Ensure flex display
             // Small delay to allow display change before opacity animation
             setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
             document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function updateLightboxImage() {
+            const img = document.getElementById('lightbox-img');
+            if (currentPlaylist[currentIndex]) {
+                img.src = currentPlaylist[currentIndex];
+            }
+        }
+
+        function navigateLightbox(direction) {
+            if (currentPlaylist.length === 0) return;
+
+            currentIndex = (currentIndex + direction + currentPlaylist.length) % currentPlaylist.length;
+            updateLightboxImage();
         }
 
         function closeLightbox() {
@@ -226,22 +270,99 @@
                     if (e.target === lightbox) closeLightbox();
                 });
             }
+
+            // Keyboard Navigation
+            document.addEventListener('keydown', (e) => {
+                const lightbox = document.getElementById('lightbox');
+                if (lightbox.classList.contains('hidden')) return;
+
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                if (e.key === 'ArrowRight') navigateLightbox(1);
+            });
         });
 
+        // Filter Gallery Logic
+        function filterGallery(category) {
+            // Update Buttons
+            document.querySelectorAll('.gallery-tab').forEach(btn => {
+                // Reset style
+                btn.classList.remove('bg-orange-600', 'text-white', 'shadow-lg', 'shadow-orange-500/30', 'border-orange-500');
+                btn.classList.add('text-slate-400', 'border-white/10');
+
+                // Style clicked button
+                if (btn.textContent.toLowerCase() === category || (category === 'toate' && btn.textContent.toLowerCase() === 'toate')) {
+                    btn.classList.add('bg-orange-600', 'text-white', 'shadow-lg', 'shadow-orange-500/30', 'border-orange-500');
+                    btn.classList.remove('text-slate-400', 'border-white/10');
+                }
+                // Handle special case matching for text content vs IDs
+                if (category === 'toate' && btn.innerText === 'TOATE') {
+                    btn.classList.add('bg-orange-600', 'text-white', 'shadow-lg', 'shadow-orange-500/30', 'border-orange-500');
+                    btn.classList.remove('text-slate-400', 'border-white/10');
+                }
+            });
+
+            // Scroll to gallery top with offset for sticky header
+            const gallerySection = document.getElementById('galerie');
+            if (gallerySection) {
+                const headerOffset = 150; // Approximated height of nav + tabs
+                const elementPosition = gallerySection.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+
+            // Show/Hide Grids
+            const grids = document.querySelectorAll('.gallery-section');
+            grids.forEach(grid => {
+                if (category === 'toate') {
+                    grid.classList.remove('hidden');
+                } else {
+                    if (grid.id === `grid-${category}`) {
+                        grid.classList.remove('hidden');
+                        // Add animation restart
+                        grid.classList.remove('animate-fadeIn');
+                        void grid.offsetWidth; // trigger reflow
+                        grid.classList.add('animate-fadeIn');
+                    } else {
+                        grid.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
         async function fetchAllGalleries() {
+            // Label mapping
+            const labels = {
+                'baie': 'Baie',
+                'bucatarie': 'Bucătărie',
+                'living': 'Living',
+                'dormitor': 'Dormitor',
+                'comercial': 'Comercial',
+                'mobilier': 'Mobilier',
+                'pardoseli': 'Pardoseli'
+            };
+
+            // Helper to hide loader when done
+            let loadedCount = 0;
+            const loader = document.getElementById('gallery-loader');
+
             for (const [key, url] of Object.entries(CONFIG.URLS)) {
                 const gridId = `grid-${key}`;
                 try {
-                    // For now, same URL is used. In real usage, you'd have different scripts/folders.
-                    // If you use the same script but different query params, modify here.
                     const response = await fetch(url);
                     const responseData = await response.json();
-                    // Handle wrapped response from Google Apps Script ({ success: true, data: [...] })
                     const galleryItems = Array.isArray(responseData) ? responseData : (responseData.data || []);
-                    renderGallery(galleryItems, gridId);
+                    renderGallery(galleryItems, gridId, labels[key] || key);
                 } catch (e) {
                     console.warn(`Eroare incarcare galerie ${key}, folosim fallback.`);
-                    renderGallery([], gridId);
+                    renderGallery([], gridId, labels[key] || key);
+                } finally {
+                    loadedCount++;
+                    if (loadedCount >= 5 && loader) loader.classList.add('hidden'); // Hide loader when most are done
                 }
             }
         }
@@ -510,150 +631,73 @@
         </div>
     </section>
 
-    <!-- Galerie Baie -->
-    <section id="galerie" class="py-8 bg-slate-950 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-baie', this)">
-            <div class="flex justify-between items-center py-4">
-                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
-                    Băi Moderne
-                </h2>
-                <div
-                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                </div>
+    <!-- Portofoliu Unified -->
+    <section id="galerie" class="py-24 bg-slate-950 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4">
+            <!-- Header -->
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">Portofoliu <span
+                        class="text-orange-500">Proiecte</span></h2>
+                <div class="w-20 h-1 bg-orange-600 mx-auto mb-8"></div>
+                <p class="text-slate-400 max-w-2xl mx-auto">Explorează lucrările noastre recente, organizate pe
+                    categorii pentru o navigare ușoară.</p>
             </div>
-            <div id="grid-baie"
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Galerie Bucătărie -->
-    <section class="py-8 bg-slate-900 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-bucatarie', this)">
-            <div class="flex justify-between items-center py-4">
-                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
-                    Bucătării de
-                    Vis</h2>
-                <div
-                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                </div>
+            <!-- Tabs Navigation -->
+            <div
+                class="flex flex-wrap justify-center gap-3 mb-8 sticky top-24 z-40 bg-slate-950/90 backdrop-blur-md py-4 rounded-2xl border border-white/5 shadow-2xl px-2">
+                <button onclick="filterGallery('toate')"
+                    class="gallery-tab active px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-orange-500 bg-orange-600 text-white shadow-lg shadow-orange-500/30">Toate</button>
+                <button onclick="filterGallery('baie')"
+                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Băi</button>
+                <button onclick="filterGallery('bucatarie')"
+                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Bucătării</button>
+                <button onclick="filterGallery('living')"
+                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Living</button>
+                <button onclick="filterGallery('dormitor')"
+                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Dormitoare</button>
+                <button onclick="filterGallery('comercial')"
+                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Comercial</button>
+                <button onclick="filterGallery('pardoseli')"
+                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Pardoseli</button>
+                <button onclick="filterGallery('mobilier')"
+                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Mobilier</button>
             </div>
-            <div id="grid-bucatarie"
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Galerie Dormitor -->
-    <section class="py-8 bg-slate-950 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-dormitor', this)">
-            <div class="flex justify-between items-center py-4">
-                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
-                    Dormitoare
-                    Relaxante</h2>
-                <div
-                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
+            <!-- Gallery Grids Container -->
+            <div id="gallery-container" class="min-h-[400px]">
+                <!-- Grids will be populated by JS, IDs match CONFIG keys -->
+                <div id="grid-baie"
+                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn">
+                </div>
+                <div id="grid-bucatarie"
+                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                </div>
+                <div id="grid-living"
+                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                </div>
+                <div id="grid-dormitor"
+                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                </div>
+                <div id="grid-comercial"
+                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                </div>
+                <div id="grid-pardoseli"
+                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                </div>
+                <div id="grid-mobilier"
+                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
                 </div>
             </div>
-            <div id="grid-dormitor"
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Galerie Living -->
-    <section class="py-8 bg-slate-900 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-living', this)">
-            <div class="flex justify-between items-center py-4">
-                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
-                    Living & Dining
-                </h2>
-                <div
-                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                </div>
-            </div>
-            <div id="grid-living"
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Galerie Comercial -->
-    <section class="py-8 bg-slate-950 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-comercial', this)">
-            <div class="flex justify-between items-center py-4">
-                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
-                    Spații Comerciale</h2>
-                <div
-                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                </div>
-            </div>
-            <div id="grid-comercial"
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
+            <!-- Loading Indicator for initial load -->
+            <div id="gallery-loader" class="flex justify-center py-20">
+                <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-orange-500"></div>
             </div>
         </div>
     </section>
 
 
-    <!-- Galerie Pardoseli -->
-    <section class="py-8 bg-slate-900 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-pardoseli', this)">
-            <div class="flex justify-between items-center py-4">
-                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
-                    Pardoseli</h2>
-                <div
-                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                </div>
-            </div>
-            <div id="grid-pardoseli"
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Galerie Mobilier -->
-    <section class="py-8 bg-slate-950 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-mobilier', this)">
-            <div class="flex justify-between items-center py-4">
-                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
-                    Mobilier</h2>
-                <div
-                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
-                    <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                </div>
-            </div>
-            <div id="grid-mobilier"
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-                <div class="skeleton aspect-[4/3] rounded-3xl"></div>
-            </div>
-        </div>
-    </section>
     <!-- Contact -->
     <section id="contact" class="py-24 bg-slate-900 text-white text-center relative overflow-hidden">
         <!-- Background Glow -->
@@ -751,9 +795,20 @@
             class="absolute top-6 right-6 text-white hover:text-orange-500 transition-colors z-[101]">
             <i class="fas fa-times text-4xl"></i>
         </button>
-        <div class="relative max-w-7xl max-h-[90vh] mx-4">
+        <div class="relative max-w-7xl max-h-[90vh] mx-4 flex items-center justify-center">
+            <!-- Navigation Arrows -->
+            <button onclick="navigateLightbox(-1); event.stopPropagation();"
+                class="absolute left-[-50px] md:left-[-80px] p-4 text-white/50 hover:text-white hover:scale-110 transition-all z-[102] focus:outline-none">
+                <i class="fas fa-chevron-left text-4xl md:text-5xl drop-shadow-lg"></i>
+            </button>
+
             <img id="lightbox-img" src="" alt="Full View"
-                class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+                class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl z-[100]">
+
+            <button onclick="navigateLightbox(1); event.stopPropagation();"
+                class="absolute right-[-50px] md:right-[-80px] p-4 text-white/50 hover:text-white hover:scale-110 transition-all z-[102] focus:outline-none">
+                <i class="fas fa-chevron-right text-4xl md:text-5xl drop-shadow-lg"></i>
+            </button>
         </div>
     </div>
 
@@ -773,4 +828,3 @@
 </body>
 
 </html>
-
