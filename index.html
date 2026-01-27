@@ -170,22 +170,63 @@
 
             displayItems.forEach((item, index) => {
                 const element = document.createElement('div');
-                element.className = `gallery-item relative overflow-hidden rounded-2xl aspect-[4/3] shadow-lg group`;
+                element.className = `gallery-item relative overflow-hidden rounded-2xl aspect-[4/3] shadow-lg group cursor-pointer`;
                 element.style.animation = `fadeInUp 0.6s ease-out forwards ${index * 0.1}s`;
                 element.style.opacity = "0";
 
+                // Add Click Handler for Lightbox
                 const mediaUrl = fixDriveUrl(item.url);
+                element.onclick = (e) => {
+                    e.stopPropagation();
+                    openLightbox(mediaUrl);
+                };
+
                 const mediaHtml = `<img src="${mediaUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform" loading="lazy">`;
 
                 element.innerHTML = `
                     ${mediaHtml}
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
                         <p class="text-white font-bold text-lg">${item.title || 'Proiect UrbanFix'}</p>
+                        <p class="text-orange-400 text-sm mt-1 transform translate-y-4 group-hover:translate-y-0 transition-transform"><i class="fas fa-search-plus"></i> Vezi detalii</p>
                     </div>
                 `;
                 grid.appendChild(element);
             });
         }
+
+        // Lightbox Functions
+        function openLightbox(url) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+
+            img.src = url;
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex'); // Ensure flex display
+            // Small delay to allow display change before opacity animation
+            setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.add('opacity-0');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                document.getElementById('lightbox-img').src = '';
+            }, 300); // Wait for transition
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close on background click
+        document.addEventListener('DOMContentLoaded', () => {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox) {
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target === lightbox) closeLightbox();
+                });
+            }
+        });
 
         async function fetchAllGalleries() {
             for (const [key, url] of Object.entries(CONFIG.URLS)) {
@@ -205,7 +246,7 @@
             }
         }
 
-        fetchAllGalleries();
+        document.addEventListener('DOMContentLoaded', fetchAllGalleries);
 
         // Mobile Menu
         const mobileBtn = document.getElementById('mobile-menu-button');
@@ -337,82 +378,90 @@
 
     <!-- Despre Noi -->
     <section id="despre-noi" class="py-24 bg-slate-950">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="relative">
-                    <!-- <img src="https://images.unsplash.com/photo-1581291417004-6e739845cfc7?q=80&w=2070"
-                        alt="Echipa finisaje Cluj" class="rounded-3xl shadow-2xl z-10 relative"> -->
+        <div class="max-w-7xl mx-auto px-4 text-center">
+
+            <!-- Stats Badge -->
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 mb-8 animate-fadeIn">
+                <span class="relative flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                </span>
+                <span class="text-sm font-bold tracking-wider uppercase">100+ Proiecte Finalizate</span>
+            </div>
+
+            <!-- Header -->
+            <h2 class="text-3xl md:text-5xl font-bold mb-6 text-white max-w-4xl mx-auto">Expertiză Locală în <span
+                    class="bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-amber-500">Amenajări
+                    Interioare</span></h2>
+
+            <!-- Description -->
+            <p class="text-slate-400 text-lg mb-16 leading-relaxed max-w-2xl mx-auto">
+                Suntem <strong>UrbanFixCluj</strong>, echipa ta de încredere din Cluj-Napoca. Transformăm spațiile în
+                locuințe de vis prin finisaje de top și atenție la detalii.
+            </p>
+
+            <!-- Feature Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                <!-- Card 1 -->
+                <div
+                    class="bg-slate-900/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 hover:border-orange-500/30 transition-all group hover:-translate-y-1">
                     <div
-                        class="absolute -bottom-6 -right-6 bg-orange-600 p-8 rounded-2xl text-white shadow-xl z-20 hidden md:block">
-                        <p class="text-4xl font-bold">100+</p>
-                        <p class="text-sm font-medium uppercase">Proiecte Finalizate</p>
-                    </div>
-                </div>
-                <div>
-                    <h2 class="text-3xl md:text-5xl font-bold mb-6">Expertiză Locală în <span
-                            class="text-orange-600">Amenajări</span></h2>
-                    <p class="text-slate-400 text-lg mb-6 leading-relaxed">
-                        Suntem <strong>UrbanFixCluj</strong>, o echipă tânără dar experimentată din
-                        <strong>Cluj-Napoca</strong>, specializată în aducerea la viață a proiectelor de design
-                        interior.
-                    </p>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center gap-3">
-                            <div class="bg-orange-900/30 p-1 rounded-full text-orange-500"><svg class="w-4 h-4"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg></div>
-                            <span class="font-medium">Consultanță gratuită pentru alegerea materialelor în
-                                Cluj-Napoca.</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <div class="bg-orange-900/30 p-1 rounded-full text-orange-500"><svg class="w-4 h-4"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg></div>
-                            <span class="font-medium">Garanția lucrării și termene de execuție scurte.</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <div class="bg-orange-900/30 p-1 rounded-full text-orange-500"><svg class="w-4 h-4"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg></div>
-                            <span class="font-medium">Execuție de mobilier la comandă sau modular</span>
-                        </li>
-                        <!-- <li class="flex items-center gap-3">
-                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg></div>
-                            <span class="font-medium">Termene de execuție scurte și respectate </span>
-                        </li> -->
-                        <li class="flex items-center gap-3">
-                            <div class="bg-orange-900/30 p-1 rounded-full text-orange-500"><svg class="w-4 h-4"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg></div>
-                            <span class="font-medium">Prețuri corecte, stabilite de la început</span>
-                        </li>
-                        <!-- <li class="flex items-center gap-3">
-                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg></div>
-                            <span class="font-medium">Prețuri corecte, stabilite de la început</span>
-                        </li> -->
-                    </ul>
-                    <!-- <a href="#contact"
-                        class="text-orange-600 font-bold flex items-center gap-2 hover:gap-4 transition-all">Află mai
-                        multe <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                        class="bg-orange-500/10 w-12 h-12 rounded-xl flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
                             </path>
-                        </svg></a> -->
+                        </svg>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">Consultanță Gratuită</h3>
+                    <p class="text-slate-400 text-sm">Te ajutăm să alegi cele mai bune materiale pentru bugetul tău.</p>
+                </div>
+
+                <!-- Card 2: Warranty -->
+                <div
+                    class="bg-slate-900/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 hover:border-orange-500/30 transition-all group hover:-translate-y-1">
+                    <div
+                        class="bg-orange-500/10 w-12 h-12 rounded-xl flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">Garanția Calității</h3>
+                    <p class="text-slate-400 text-sm">Lucrări executate la standarde înalte cu termene respectate.</p>
+                </div>
+
+                <!-- Card 3: Furniture -->
+                <div
+                    class="bg-slate-900/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 hover:border-orange-500/30 transition-all group hover:-translate-y-1">
+                    <div
+                        class="bg-orange-500/10 w-12 h-12 rounded-xl flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">Mobilier Custom</h3>
+                    <p class="text-slate-400 text-sm">Soluții de mobilier la comandă perfect integrate în spațiul tău.
+                    </p>
+                </div>
+
+                <!-- Card 4: Price -->
+                <div
+                    class="bg-slate-900/50 backdrop-blur-sm p-8 rounded-2xl border border-white/5 hover:border-orange-500/30 transition-all group hover:-translate-y-1">
+                    <div
+                        class="bg-orange-500/10 w-12 h-12 rounded-xl flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-white font-bold text-lg mb-2">Transparență Totală</h3>
+                    <p class="text-slate-400 text-sm">Prețuri corecte stabilite de la început, fără costuri ascunse.</p>
                 </div>
             </div>
         </div>
@@ -550,8 +599,7 @@
         <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-comercial', this)">
             <div class="flex justify-between items-center py-4">
                 <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
-                    Spații
-                    Comerciale</h2>
+                    Spații Comerciale</h2>
                 <div
                     class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
@@ -607,34 +655,107 @@
         </div>
     </section>
     <!-- Contact -->
-    <section id="contact" class="py-24 bg-slate-900 text-white text-center">
-        <div class="max-w-4xl mx-auto px-4">
-            <h2 class="text-4xl md:text-5xl font-bold mb-8">Solicită Ofertă Gratuită</h2>
-            <p class="mb-12 text-slate-400">Oferim devize clare și termene precise pentru proiectele de amenajare din
-                Cluj-Napoca.</p>
-            <a href="tel:+40736953375"
-                class="inline-block px-10 py-6 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-3xl text-3xl font-bold transition-all transform hover:scale-105 shadow-2xl hover:shadow-orange-600/40 border-4 border-white/10">
-                +40 736 953 375
-            </a>
+    <section id="contact" class="py-24 bg-slate-900 text-white text-center relative overflow-hidden">
+        <!-- Background Glow -->
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-orange-600/20 rounded-full blur-[100px] pointer-events-none">
+        </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                <a href="https://wa.me/40736953375" target="_blank"
-                    class="px-8 py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2">
-                    <i class="fab fa-whatsapp text-2xl"></i> WhatsApp
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <div class="bg-slate-900/40 backdrop-blur-xl border border-white/10 p-12 rounded-3xl shadow-2xl">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">Hai să discutăm proiectul tău</h2>
+                <p class="mb-10 text-slate-400 text-lg">Oferim devize clare și termene precise pentru amenajări în
+                    Cluj-Napoca.</p>
+
+                <a href="tel:+40736953375"
+                    class="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-2xl text-2xl font-bold transition-all transform hover:scale-105 shadow-xl hover:shadow-orange-600/40 mb-8 group">
+                    <i class="fas fa-phone-alt animate-pulse"></i>
+                    +40 736 953 375
                 </a>
-                <a href="https://m.me/consilierimobiliar.bilocopetiucstefan" target="_blank"
-                    class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all transform hover:scale-105 flex items-center justify-center gap-2">
-                    <i class="fab fa-facebook-messenger text-2xl"></i> Chat Facebook
-                </a>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                    <a href="https://wa.me/40736953375" target="_blank"
+                        class="px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-3 text-green-400 font-semibold group">
+                        <i class="fab fa-whatsapp text-2xl group-hover:rotate-12 transition-transform"></i> WhatsApp
+                    </a>
+                    <a href="https://m.me/consilierimobiliar.bilocopetiucstefan" target="_blank"
+                        class="px-6 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-3 text-blue-400 font-semibold group">
+                        <i class="fab fa-facebook-messenger text-2xl group-hover:rotate-12 transition-transform"></i>
+                        Messenger
+                    </a>
+                </div>
             </div>
-            <p class="mt-6 text-slate-500">SC BILO MOB SMART SRL, CUI 33792535. Cluj-Napoca, Județul Cluj</p>
+            <p class="mt-8 text-slate-500 text-sm">SC BILO MOB SMART SRL • CUI 33792535 • Cluj-Napoca</p>
         </div>
     </section>
 
-    <footer class="bg-slate-950 text-white py-12 text-center border-t border-white/5">
-        <p class="text-slate-500">&copy; <span id="year"></span> UrbanFixCluj. Toate drepturile rezervate.</p>
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-white/5 py-12">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div class="col-span-1 md:col-span-2">
+                <h3 class="text-2xl font-bold text-white mb-4">UrbanFix<span class="text-orange-600">Cluj</span></h3>
+                <p class="text-slate-500 max-w-sm mb-6">Partenerul tău de încredere pentru amenajări interioare și
+                    renovări
+                    complete în Cluj-Napoca.</p>
+                <div class="flex gap-4">
+                    <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="nofollow">
+                        <img src="sal.png" alt="Solutionarea Alternativa a Litigiilor"
+                            class="h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+                    </a>
+                    <a href="https://ec.europa.eu/consumers/odr/main/index.cfm?event=main.home.chooseLanguage"
+                        target="_blank" rel="nofollow">
+                        <img src="sol.png" alt="Solutionarea Online a Litigiilor"
+                            class="h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+                    </a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Navigare Rapidă</h4>
+                <ul class="space-y-2 text-slate-400">
+                    <li><a href="#acasa" class="hover:text-orange-500 transition-colors">Acasă</a></li>
+                    <li><a href="#servicii" class="hover:text-orange-500 transition-colors">Servicii</a></li>
+                    <li><a href="#galerie" class="hover:text-orange-500 transition-colors">Portofoliu</a></li>
+                    <li><a href="#contact" class="hover:text-orange-500 transition-colors">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Social</h4>
+                <div class="flex space-x-4">
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:bg-orange-600 hover:text-white transition-all"><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:bg-orange-600 hover:text-white transition-all"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:bg-orange-600 hover:text-white transition-all"><i
+                            class="fab fa-tiktok"></i></a>
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-slate-400 hover:bg-orange-600 hover:text-white transition-all"><i
+                            class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-slate-600 text-sm border-t border-white/5 pt-8">
+            &copy; 2024 UrbanFixCluj. Toate drepturile rezervate.
+        </div>
     </footer>
 
+
+
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox"
+        class="lightbox fixed inset-0 z-[100] bg-black/95 hidden items-center justify-center opacity-0 transition-opacity duration-300">
+        <button onclick="closeLightbox()"
+            class="absolute top-6 right-6 text-white hover:text-orange-500 transition-colors z-[101]">
+            <i class="fas fa-times text-4xl"></i>
+        </button>
+        <div class="relative max-w-7xl max-h-[90vh] mx-4">
+            <img id="lightbox-img" src="" alt="Full View"
+                class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+        </div>
+    </div>
 
     <style>
         @keyframes fadeInUp {
