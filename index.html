@@ -350,6 +350,9 @@
             let loadedCount = 0;
             const loader = document.getElementById('gallery-loader');
 
+            // Capture initial hash to prevent scroll hijacking if user navigates during load
+            const initialHash = window.location.hash;
+
             for (const [key, url] of Object.entries(CONFIG.URLS)) {
                 const gridId = `grid-${key}`;
                 try {
@@ -363,52 +366,67 @@
                 } finally {
                     loadedCount++;
                     if (loadedCount >= 5 && loader) loader.classList.add('hidden'); // Hide loader when most are done
+
+                    // Fix Layout Shift: Check if there's a hash and re-scroll to it after content loads
+                    // ONLY scroll if the user hasn't navigated somewhere else (hash matches initial)
+                    if (initialHash && window.location.hash === initialHash) {
+                        // Small delay to ensure rendering is complete
+                        setTimeout(() => {
+                            const target = document.querySelector(initialHash);
+                            if (target) {
+                                target.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        }, 500);
+                    }
                 }
             }
         }
 
         document.addEventListener('DOMContentLoaded', fetchAllGalleries);
 
-        // Mobile Menu
-        const mobileBtn = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileBtn.onclick = () => mobileMenu.classList.toggle('hidden');
-        document.querySelectorAll('.mobile-link').forEach(l => l.onclick = () => mobileMenu.classList.add('hidden'));
+        // Mobile Menu Logic (Wrapped in DOMContentLoaded to ensure elements exist)
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileBtn = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.onclick = () => mobileMenu.classList.toggle('hidden');
+                document.querySelectorAll('.mobile-link').forEach(l => l.onclick = () => mobileMenu.classList.add('hidden'));
+            }
+
+            // Smart Sticky Tabs Logic
+            const galleryTabs = document.getElementById('gallery-tabs');
+            let lastScrollTop = 0;
+
+            if (galleryTabs) {
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const isScrollingDown = scrollTop > lastScrollTop;
+
+                    // Only apply if we are past the navbar threshold
+                    if (scrollTop > 100) {
+                        if (isScrollingDown) {
+                            // Hide tabs (move up and fade out)
+                            galleryTabs.classList.add('-translate-y-24', 'opacity-0', 'pointer-events-none');
+                        } else {
+                            // Show tabs
+                            galleryTabs.classList.remove('-translate-y-24', 'opacity-0', 'pointer-events-none');
+                        }
+                    }
+
+                    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+                }, { passive: true });
+            }
+        });
 
         // Navbar Scroll
         // Navbar Scroll with Text Color Switch
         window.onscroll = () => {
             const nav = document.getElementById('navbar');
-            const logoText = document.getElementById('logo-text');
-            const navLinks = document.querySelectorAll('.nav-link');
-            const mobileBtn = document.getElementById('mobile-menu-button');
 
             if (window.scrollY > 50) {
                 nav.classList.add('glass', 'shadow-md', 'py-3');
-                // Switch to dark text
-                logoText.classList.remove('text-white');
-                logoText.classList.add('text-slate-900');
-
-                navLinks.forEach(l => {
-                    l.classList.remove('text-white/90');
-                    l.classList.add('text-slate-900');
-                });
-
-                mobileBtn.classList.remove('text-white');
-                mobileBtn.classList.add('text-slate-900');
             } else {
                 nav.classList.remove('glass', 'shadow-md', 'py-3');
-                // Revert to white text
-                logoText.classList.add('text-white');
-                logoText.classList.remove('text-slate-900');
-
-                navLinks.forEach(l => {
-                    l.classList.add('text-white/90');
-                    l.classList.remove('text-slate-900');
-                });
-
-                mobileBtn.classList.add('text-white');
-                mobileBtn.classList.remove('text-slate-900');
             }
         };
         // Toggle Gallery Accordion
@@ -644,12 +662,12 @@
             </div>
 
             <!-- Tabs Navigation -->
-            <div
-                class="flex flex-wrap justify-center gap-3 mb-8 sticky top-24 z-40 bg-slate-950/90 backdrop-blur-md py-4 rounded-2xl border border-white/5 shadow-2xl px-2">
+            <div id="gallery-tabs"
+                class="flex flex-wrap justify-center gap-3 mb-8 sticky top-24 z-40 bg-slate-950/90 backdrop-blur-md py-4 rounded-2xl border border-white/5 shadow-2xl px-2 transition-all duration-300 transform">
                 <button onclick="filterGallery('toate')"
-                    class="gallery-tab active px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-orange-500 bg-orange-600 text-white shadow-lg shadow-orange-500/30">Toate</button>
+                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Toate</button>
                 <button onclick="filterGallery('baie')"
-                    class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Băi</button>
+                    class="gallery-tab active px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-orange-500 bg-orange-600 text-white shadow-lg shadow-orange-500/30">Băi</button>
                 <button onclick="filterGallery('bucatarie')"
                     class="gallery-tab px-4 py-2 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all border border-white/10 text-slate-400 hover:text-white hover:border-orange-500 hover:bg-slate-800">Bucătării</button>
                 <button onclick="filterGallery('living')"
@@ -665,28 +683,30 @@
             </div>
 
             <!-- Gallery Grids Container -->
-            <div id="gallery-container" class="min-h-[400px]">
+            <div id="gallery-container"
+                class="h-[75vh] overflow-y-auto pr-4 scroll-smooth custom-scrollbar border border-white/5 rounded-2xl bg-slate-900/30 backdrop-blur-sm p-4">
                 <!-- Grids will be populated by JS, IDs match CONFIG keys -->
                 <div id="grid-baie"
                     class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn">
                 </div>
+                <!-- Default hidden -->
                 <div id="grid-bucatarie"
-                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                    class="gallery-section hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
                 </div>
                 <div id="grid-living"
-                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                    class="gallery-section hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
                 </div>
                 <div id="grid-dormitor"
-                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                    class="gallery-section hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
                 </div>
                 <div id="grid-comercial"
-                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                    class="gallery-section hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
                 </div>
                 <div id="grid-pardoseli"
-                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                    class="gallery-section hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
                 </div>
                 <div id="grid-mobilier"
-                    class="gallery-section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
+                    class="gallery-section hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fadeIn mt-6">
                 </div>
             </div>
 
@@ -712,7 +732,7 @@
                     Cluj-Napoca.</p>
 
                 <a href="tel:+40736953375"
-                    class="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-2xl text-2xl font-bold transition-all transform hover:scale-105 shadow-xl hover:shadow-orange-600/40 mb-8 group">
+                    class="inline-flex items-center gap-3 px-6 md:px-10 py-5 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-2xl text-xl md:text-2xl font-bold transition-all transform hover:scale-105 shadow-xl hover:shadow-orange-600/40 mb-8 group whitespace-nowrap">
                     <i class="fas fa-phone-alt animate-pulse"></i>
                     +40 736 953 375
                 </a>
