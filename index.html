@@ -85,8 +85,9 @@
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(2, 6, 23, 0.9);
             backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .gallery-item.hidden {
@@ -127,7 +128,7 @@
 </script>
 </head>
 
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-950 text-slate-300">
 
     <!-- Configurație Tehnică -->
     <script>
@@ -137,8 +138,10 @@
                 baie: "https://script.google.com/macros/s/AKfycbyg245gdrvevBiyEjaxYBahD-4tm3zHa0HV1RFhJUeiDBeIh42PqJjOvMjAa-_zgClD/exec",
                 bucatarie: "https://script.google.com/macros/s/AKfycbyuFNN_Xc5zeOOpbK2F4zwYcYe0KOwnaOGmsg0gYWqjKxCLdEseKUI4j617fh9FzKck/exec",
                 dormitor: "https://script.google.com/macros/s/AKfycbxm1D7ItBIXwyte4fK7u7h9sveIkOoQec9Zx-McFcSs1AfNmA6JMS_Qkv_sm6pn5tO3/exec",
-                living: "https://script.google.com/macros/s/AKfycbxTd-olra8UTO3aBCUt0zFwil8AaeAGXbyBZLGRczm36x0jwUUzArI7re2cnLhRMsVv/exec",
-                comercial: "https://script.google.com/macros/s/AKfycbxTd-olra8UTO3aBCUt0zFwil8AaeAGXbyBZLGRczm36x0jwUUzArI7re2cnLhRMsVv/exec"
+                living: "https://script.google.com/macros/s/AKfycbzcfMKpRXYMx5skgs4Kk1XpIkFlS32vyJV5FOJhAqQLxNrZltaenXROEK0JDPeS_9C9Ig/exec",
+                comercial: "https://script.google.com/macros/s/AKfycbyfg53jm8zbEOqZvmfhtkdwDW3KjUXRFn8DpzeuHOZaaXt4l5b0EiTq3sWUPp9bM3yttA/exec",
+                pardoseli: "https://script.google.com/macros/s/AKfycbwCLShoNNh8IlnrAxitioVN1uWy60lZU5YVWCAE08m9dab6Fvy2vHxiHwR-st9tWrmhCg/exec",
+                mobilier: "https://script.google.com/macros/s/AKfycbx0Iv-sJaFAYGCjgRZqtwlJlhVN8uQnB8pdNOHXmKR8K3lOYyqqsHhObQGpfVMHesghew/exec"
             },
             FALLBACK_IMAGES: [
                 { type: 'photo', url: 'https://images.unsplash.com/photo-1620626012761-d72698e55301?q=80&w=1000', title: 'Interior UrbanFix' },
@@ -167,7 +170,7 @@
 
             displayItems.forEach((item, index) => {
                 const element = document.createElement('div');
-                element.className = `gallery-item relative overflow-hidden rounded-3xl aspect-[4/3] shadow-lg group`;
+                element.className = `gallery-item relative overflow-hidden rounded-2xl aspect-[4/3] shadow-lg group`;
                 element.style.animation = `fadeInUp 0.6s ease-out forwards ${index * 0.1}s`;
                 element.style.opacity = "0";
 
@@ -211,10 +214,40 @@
         document.querySelectorAll('.mobile-link').forEach(l => l.onclick = () => mobileMenu.classList.add('hidden'));
 
         // Navbar Scroll
+        // Navbar Scroll with Text Color Switch
         window.onscroll = () => {
             const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) nav.classList.add('glass', 'shadow-md', 'py-3');
-            else nav.classList.remove('glass', 'shadow-md', 'py-3');
+            const logoText = document.getElementById('logo-text');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileBtn = document.getElementById('mobile-menu-button');
+
+            if (window.scrollY > 50) {
+                nav.classList.add('glass', 'shadow-md', 'py-3');
+                // Switch to dark text
+                logoText.classList.remove('text-white');
+                logoText.classList.add('text-slate-900');
+
+                navLinks.forEach(l => {
+                    l.classList.remove('text-white/90');
+                    l.classList.add('text-slate-900');
+                });
+
+                mobileBtn.classList.remove('text-white');
+                mobileBtn.classList.add('text-slate-900');
+            } else {
+                nav.classList.remove('glass', 'shadow-md', 'py-3');
+                // Revert to white text
+                logoText.classList.add('text-white');
+                logoText.classList.remove('text-slate-900');
+
+                navLinks.forEach(l => {
+                    l.classList.add('text-white/90');
+                    l.classList.remove('text-slate-900');
+                });
+
+                mobileBtn.classList.add('text-white');
+                mobileBtn.classList.remove('text-slate-900');
+            }
         };
         // Toggle Gallery Accordion
         function toggleGallery(gridId, header) {
@@ -240,8 +273,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-2">
-                    <a href="#" class="logo"><img src="logo.png" alt="UrbanFixCluj Logo" class="h-10 w-auto"></a>
-                    <span id="logo-text" class="text-xl font-bold tracking-tighter text-white">UrbanFixCluj<span
+                    <!-- <a href="#" class="logo"><img src="logo.png" alt="UrbanFixCluj Logo" class="h-10 w-auto"></a> -->
+                    <span id="logo-text" class="text-xl font-bold tracking-tighter text-white">UrbanFix<span
                             class="text-orange-600">Cluj</span></span>
                 </div>
                 <div class="hidden md:flex space-x-8">
@@ -282,7 +315,9 @@
     <header id="acasa" class="relative h-screen flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 z-0 bg-cover bg-center"
             style="background-image: url('https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069');">
-            <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px]"></div>
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/60 to-slate-900/30 backdrop-blur-[1px]">
+            </div>
         </div>
         <div class="relative z-10 max-w-5xl mx-auto px-4 text-center text-white">
             <h1 class="text-4xl md:text-7xl font-bold mb-6 leading-tight">Amenajări interioare<br><span
@@ -291,7 +326,7 @@
                 de la prima mână</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="#galerie"
-                    class="px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-full transition-all transform hover:scale-105">Portofoliu
+                    class="px-8 py-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold rounded-full transition-all transform hover:scale-105 shadow-xl hover:shadow-orange-600/30">Portofoliu
                     Lucrări</a>
                 <a href="#contact"
                     class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-semibold rounded-full border border-white/30 transition-all transform hover:scale-105">Cere
@@ -301,7 +336,7 @@
     </header>
 
     <!-- Despre Noi -->
-    <section id="despre-noi" class="py-24 bg-white">
+    <section id="despre-noi" class="py-24 bg-slate-950">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div class="relative">
@@ -316,15 +351,15 @@
                 <div>
                     <h2 class="text-3xl md:text-5xl font-bold mb-6">Expertiză Locală în <span
                             class="text-orange-600">Amenajări</span></h2>
-                    <p class="text-slate-600 text-lg mb-6 leading-relaxed">
+                    <p class="text-slate-400 text-lg mb-6 leading-relaxed">
                         Suntem <strong>UrbanFixCluj</strong>, o echipă tânără dar experimentată din
                         <strong>Cluj-Napoca</strong>, specializată în aducerea la viață a proiectelor de design
                         interior.
                     </p>
                     <ul class="space-y-4 mb-8">
                         <li class="flex items-center gap-3">
-                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-orange-900/30 p-1 rounded-full text-orange-500"><svg class="w-4 h-4"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                         d="M5 13l4 4L19 7"></path>
                                 </svg></div>
@@ -332,32 +367,32 @@
                                 Cluj-Napoca.</span>
                         </li>
                         <li class="flex items-center gap-3">
-                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-orange-900/30 p-1 rounded-full text-orange-500"><svg class="w-4 h-4"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                         d="M5 13l4 4L19 7"></path>
                                 </svg></div>
                             <span class="font-medium">Garanția lucrării și termene de execuție scurte.</span>
                         </li>
                         <li class="flex items-center gap-3">
-                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-orange-900/30 p-1 rounded-full text-orange-500"><svg class="w-4 h-4"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                         d="M5 13l4 4L19 7"></path>
                                 </svg></div>
                             <span class="font-medium">Execuție de mobilier la comandă sau modular</span>
                         </li>
-                        <li class="flex items-center gap-3">
+                        <!-- <li class="flex items-center gap-3">
                             <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                         d="M5 13l4 4L19 7"></path>
                                 </svg></div>
                             <span class="font-medium">Termene de execuție scurte și respectate </span>
-                        </li>
+                        </li> -->
                         <li class="flex items-center gap-3">
-                            <div class="bg-orange-100 p-1 rounded-full text-orange-600"><svg class="w-4 h-4" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-orange-900/30 p-1 rounded-full text-orange-500"><svg class="w-4 h-4"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                         d="M5 13l4 4L19 7"></path>
                                 </svg></div>
@@ -384,54 +419,62 @@
     </section>
 
     <!-- Servicii -->
-    <section id="servicii" class="py-24 bg-slate-50">
+    <section id="servicii" class="py-24 bg-slate-900">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <h2 class="text-3xl md:text-5xl font-bold mb-4">Urban Fix Cluj</h2>
             <div class="w-20 h-1 bg-orange-600 mx-auto mb-12"></div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
-                    <h3 class="text-xl font-bold mb-4">Finisare pereți</h3>
-                    <p class="text-slate-600">Pereți drepți și fini, gata pentru vopsea, tapet, panouri decorative sau
+                <div
+                    class="bg-slate-800 p-10 rounded-3xl shadow-lg border border-slate-700 hover:shadow-2xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group">
+                    <h3 class="text-xl font-bold mb-4 text-white">Finisare pereți</h3>
+                    <p class="text-slate-400">Pereți drepți și fini, gata pentru vopsea, tapet, panouri decorative sau
                         riflaje.</p>
                 </div>
-                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
-                    <h3 class="text-xl font-bold mb-4">Gresie & Faianță</h3>
-                    <p class="text-slate-600">Montaj precis de orice dimensiuni.
+                <div
+                    class="bg-slate-800 p-10 rounded-3xl shadow-lg border border-slate-700 hover:shadow-2xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group">
+                    <h3 class="text-xl font-bold mb-4 text-white">Gresie & Faianță</h3>
+                    <p class="text-slate-400">Montaj precis de orice dimensiuni.
                     </p>
                 </div>
-                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
-                    <h3 class="text-xl font-bold mb-4">Montaj parchet</h3>
-                    <p class="text-slate-600">Parchet montat corect, cu finisaje îngrijite.</p>
+                <div
+                    class="bg-slate-800 p-10 rounded-3xl shadow-lg border border-slate-700 hover:shadow-2xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group">
+                    <h3 class="text-xl font-bold mb-4 text-white">Montaj parchet</h3>
+                    <p class="text-slate-400">Parchet montat corect, cu finisaje îngrijite.</p>
                 </div>
-                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
-                    <h3 class="text-xl font-bold mb-4">Obiecte sanitare</h3>
-                    <p class="text-slate-600">Montaj profesional: WC, lavoar, cadă, duș, baterii, sisteme tip gheberit.
+                <div
+                    class="bg-slate-800 p-10 rounded-3xl shadow-lg border border-slate-700 hover:shadow-2xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group">
+                    <h3 class="text-xl font-bold mb-4 text-white">Obiecte sanitare</h3>
+                    <p class="text-slate-400">Montaj profesional: WC, lavoar, cadă, duș, baterii, sisteme tip gheberit.
                     </p>
                 </div>
-                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
-                    <h3 class="text-xl font-bold mb-4">Renovări la cheie</h3>
-                    <p class="text-slate-600">Ne ocupăm de tot: de la decopertare până la ultimele finisaje.</p>
+                <div
+                    class="bg-slate-800 p-10 rounded-3xl shadow-lg border border-slate-700 hover:shadow-2xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group">
+                    <h3 class="text-xl font-bold mb-4 text-white">Renovări la cheie</h3>
+                    <p class="text-slate-400">Ne ocupăm de tot: de la decopertare până la ultimele finisaje.</p>
                 </div>
-                <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-all">
-                    <h3 class="text-xl font-bold mb-4">Mobilier</h3>
-                    <p class="text-slate-600">Mobiler personalizat la comandă sau modular</p>
+                <div
+                    class="bg-slate-800 p-10 rounded-3xl shadow-lg border border-slate-700 hover:shadow-2xl hover:-translate-y-2 hover:border-orange-500 transition-all duration-300 group">
+                    <h3 class="text-xl font-bold mb-4 text-white">Mobilier</h3>
+                    <p class="text-slate-400">Mobiler personalizat la comandă sau modular</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Galerie Baie -->
-    <section class="py-8 bg-white border-b border-slate-100">
+    <section id="galerie" class="py-8 bg-slate-950 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-baie', this)">
             <div class="flex justify-between items-center py-4">
-                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Băi Moderne
+                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
+                    Băi Moderne
                 </h2>
                 <div
-                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
                 </div>
             </div>
-            <div id="grid-baie" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+            <div id="grid-baie"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
@@ -440,17 +483,19 @@
     </section>
 
     <!-- Galerie Bucătărie -->
-    <section class="py-8 bg-slate-50 border-b border-slate-200">
+    <section class="py-8 bg-slate-900 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-bucatarie', this)">
             <div class="flex justify-between items-center py-4">
-                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Bucătării de
+                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
+                    Bucătării de
                     Vis</h2>
                 <div
-                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
                 </div>
             </div>
-            <div id="grid-bucatarie" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+            <div id="grid-bucatarie"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
@@ -459,17 +504,19 @@
     </section>
 
     <!-- Galerie Dormitor -->
-    <section class="py-8 bg-white border-b border-slate-100">
+    <section class="py-8 bg-slate-950 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-dormitor', this)">
             <div class="flex justify-between items-center py-4">
-                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Dormitoare
+                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
+                    Dormitoare
                     Relaxante</h2>
                 <div
-                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
                 </div>
             </div>
-            <div id="grid-dormitor" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+            <div id="grid-dormitor"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
@@ -478,17 +525,19 @@
     </section>
 
     <!-- Galerie Living -->
-    <section class="py-8 bg-slate-50 border-b border-slate-200">
+    <section class="py-8 bg-slate-900 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-living', this)">
             <div class="flex justify-between items-center py-4">
-                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Living & Dining
+                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
+                    Living & Dining
                 </h2>
                 <div
-                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
                 </div>
             </div>
-            <div id="grid-living" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+            <div id="grid-living"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
@@ -497,17 +546,19 @@
     </section>
 
     <!-- Galerie Comercial -->
-    <section class="py-8 bg-white border-b border-slate-100">
+    <section class="py-8 bg-slate-950 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-comercial', this)">
             <div class="flex justify-between items-center py-4">
-                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">Spații
+                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
+                    Spații
                     Comerciale</h2>
                 <div
-                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
                 </div>
             </div>
-            <div id="grid-comercial" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+            <div id="grid-comercial"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
@@ -516,18 +567,19 @@
     </section>
 
 
-    <!-- Galerie Comercial -->
-    <section class="py-8 bg-white border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-comercial', this)">
+    <!-- Galerie Pardoseli -->
+    <section class="py-8 bg-slate-900 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-pardoseli', this)">
             <div class="flex justify-between items-center py-4">
-                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">
+                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
                     Pardoseli</h2>
                 <div
-                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
                 </div>
             </div>
-            <div id="grid-comercial" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+            <div id="grid-pardoseli"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
@@ -535,18 +587,19 @@
         </div>
     </section>
 
-    <!-- Galerie Comercial -->
-    <section class="py-8 bg-white border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-comercial', this)">
+    <!-- Galerie Mobilier -->
+    <section class="py-8 bg-slate-950 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 cursor-pointer group" onclick="toggleGallery('grid-mobilier', this)">
             <div class="flex justify-between items-center py-4">
-                <h2 class="text-2xl md:text-4xl font-bold group-hover:text-orange-600 transition-colors">
+                <h2 class="text-xl md:text-3xl font-bold text-slate-100 group-hover:text-orange-500 transition-colors">
                     Mobilier</h2>
                 <div
-                    class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+                    class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
                     <i class="fas fa-chevron-down transition-transform duration-300"></i>
                 </div>
             </div>
-            <div id="grid-comercial" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8 hidden pb-8">
+            <div id="grid-mobilier"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 hidden pb-8">
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
                 <div class="skeleton aspect-[4/3] rounded-3xl"></div>
@@ -560,7 +613,7 @@
             <p class="mb-12 text-slate-400">Oferim devize clare și termene precise pentru proiectele de amenajare din
                 Cluj-Napoca.</p>
             <a href="tel:+40736953375"
-                class="inline-block px-10 py-6 bg-orange-600 hover:bg-orange-700 rounded-3xl text-3xl font-bold transition-all transform hover:scale-105">
+                class="inline-block px-10 py-6 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-3xl text-3xl font-bold transition-all transform hover:scale-105 shadow-2xl hover:shadow-orange-600/40 border-4 border-white/10">
                 +40 736 953 375
             </a>
 
