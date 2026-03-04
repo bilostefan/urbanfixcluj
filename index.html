@@ -2,6 +2,20 @@
 <html lang="ro" class="scroll-smooth">
 
 <head>
+    <!-- Google Consent Mode Default Setup -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+
+        // Set default consent to 'denied'
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+        });
+    </script>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WFCVNY3HL8"></script>
     <script>
@@ -148,6 +162,27 @@
 </head>
 
 <body class="bg-slate-950 text-slate-300">
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-banner"
+        class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-white/10 p-4 md:p-6 z-[100] transform transition-transform duration-500 translate-y-full flex flex-col md:flex-row items-center justify-between gap-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <div class="text-sm text-slate-300 flex-1 max-w-4xl">
+            <h3 class="text-white font-bold text-lg mb-2">Respectăm confidențialitatea ta</h3>
+            <p>Acest site utilizează cookie-uri pentru a îmbunătăți experiența ta de navigare, a analiza traficul și
+                pentru a-ți oferi reclame personalizate (funcționalități Google Analytics și Google Ads, conform
+                reglementărilor GDPR/EEA). Poți accepta toate cookie-urile sau le poți refuza.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 min-w-max">
+            <button id="cookie-reject"
+                class="px-6 py-2 rounded-full border border-white/20 text-slate-300 hover:bg-white/5 transition-colors text-sm font-semibold">
+                Refuză
+            </button>
+            <button id="cookie-accept"
+                class="px-6 py-2 rounded-full bg-orange-600 hover:bg-orange-700 text-white transition-colors text-sm font-semibold shadow-lg shadow-orange-500/30">
+                Acceptă Toate
+            </button>
+        </div>
+    </div>
 
     <!-- Configurație Tehnică -->
     <script>
@@ -393,8 +428,48 @@
 
         document.addEventListener('DOMContentLoaded', fetchAllGalleries);
 
-        // Mobile Menu Logic (Wrapped in DOMContentLoaded to ensure elements exist)
+        // Mobile Menu Logic & Cookie Consent (Wrapped in DOMContentLoaded to ensure elements exist)
         document.addEventListener('DOMContentLoaded', () => {
+            // Cookie Consent Logic
+            const banner = document.getElementById('cookie-banner');
+            const acceptBtn = document.getElementById('cookie-accept');
+            const rejectBtn = document.getElementById('cookie-reject');
+
+            if (banner && acceptBtn && rejectBtn) {
+                const consent = localStorage.getItem('cookie_consent');
+
+                if (!consent) {
+                    setTimeout(() => banner.classList.remove('translate-y-full'), 1000);
+                }
+
+                const closeBanner = () => {
+                    banner.classList.add('translate-y-full');
+                    setTimeout(() => banner.style.display = 'none', 500);
+                };
+
+                acceptBtn.addEventListener('click', () => {
+                    localStorage.setItem('cookie_consent', 'accepted');
+                    gtag('consent', 'update', {
+                        'ad_storage': 'granted',
+                        'ad_user_data': 'granted',
+                        'ad_personalization': 'granted',
+                        'analytics_storage': 'granted'
+                    });
+                    closeBanner();
+                });
+
+                rejectBtn.addEventListener('click', () => {
+                    localStorage.setItem('cookie_consent', 'rejected');
+                    gtag('consent', 'update', {
+                        'ad_storage': 'denied',
+                        'ad_user_data': 'denied',
+                        'ad_personalization': 'denied',
+                        'analytics_storage': 'denied'
+                    });
+                    closeBanner();
+                });
+            }
+
             const mobileBtn = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             if (mobileBtn && mobileMenu) {
